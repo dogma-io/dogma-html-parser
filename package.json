@@ -1,0 +1,38 @@
+{
+  "name": "dogma-html-parser",
+  "version": "0.0.1",
+  "description": "HTML parser and compiler",
+  "main": "index.js",
+  "scripts": {
+    "test": "flow && eslint . && jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/dogma-io/dogma-html-parser.git"
+  },
+  "keywords": [
+    "html",
+    "parser",
+    "compiler"
+  ],
+  "author": "Matthew Dahl <https://github.com/sandersky>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dogma-io/dogma-html-parser/issues"
+  },
+  "homepage": "https://github.com/dogma-io/dogma-html-parser#readme",
+  "devDependencies": {
+    "babel-eslint": "7.2.3",
+    "babel-preset-es2015": "6.24.1",
+    "babel-preset-react": "6.24.1",
+    "eslint": "4.6.1",
+    "eslint-config-standard": "10.2.1",
+    "eslint-plugin-flowtype": "2.35.1",
+    "eslint-plugin-import": "2.7.0",
+    "eslint-plugin-node": "5.1.1",
+    "eslint-plugin-promise": "3.5.0",
+    "eslint-plugin-standard": "3.0.1",
+    "flow-bin": "0.54.1",
+    "jest-cli": "21.0.2"
+  }
+}
