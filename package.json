@@ -2,7 +2,7 @@
   "name": "dogma-html-parser",
   "version": "0.0.1",
   "description": "HTML parser and compiler",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
     "build": "./scripts/build.js",
     "test": "flow && eslint . && jest"
