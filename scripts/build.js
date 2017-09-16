@@ -44,6 +44,16 @@ function buildWithWebpack (options) {
   return new Promise((resolve, reject) => {
     const compiler = webpack({
       entry: path.join(__dirname, '..', 'src', 'index.js'),
+      module: {
+        rules: [
+          {
+            test: /\.js$/,
+            use: {
+              loader: 'babel-loader',
+            },
+          },
+        ],
+      },
       output: {
         filename: path.basename(options.file),
         path: path.dirname(options.file),
