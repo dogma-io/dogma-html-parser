@@ -34,7 +34,7 @@ export function parseNode (
   start: number,
   options?: ParseOptions,
 ): ParseNodeResponse {
-  const nodes: Array<CommentNode | ElementNode | TextNode> = []
+  const nodes = []
   let index: number = start
 
   options = Object.assign({
@@ -262,6 +262,8 @@ export function parseElementNode (
       buffer.push(c)
     }
   }
+
+  throw new Error('Unexpected')
 }
 
 export function parseElementNodeAttribute (

@@ -48,15 +48,13 @@ export type ParseCommentNodeResponse = {|
   node: ChildrenNode | CommentNode,
 |}
 
-export type ParseElementOrCommentNodeResponse = {|
-  index: number,
-  node: ChildrenNode | CommentNode | ElementNode,
-|}
-
 export type ParseElementNodeResponse = {|
   index: number,
   node: ElementNode,
 |}
+
+export type ParseElementOrCommentNodeResponse =
+  ParseCommentNodeResponse | ParseElementNodeResponse
 
 export type ParseNodeResponse = {|
   index: number,
