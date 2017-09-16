@@ -49,6 +49,7 @@ function buildWithWebpack (options) {
         path: path.dirname(options.file),
       },
       plugins,
+      target: options.target || 'web',
     })
 
     compiler.run((err, stats) => {
@@ -62,6 +63,7 @@ function buildWithWebpack (options) {
 }
 
 Promise.all([
+  // ES6 builds
   buildWithRollup({
     debug: true,
     file: 'dist/dogma-html-parser.es6.js',
@@ -72,6 +74,8 @@ Promise.all([
     file: 'dist/dogma-html-parser.es6.min.js',
     format: 'iife',
   }),
+
+  // ES5 builds
   buildWithWebpack({
     debug: true,
     file: path.join(__dirname, '..', 'dist', 'dogma-html-parser.js'),
@@ -79,6 +83,13 @@ Promise.all([
   buildWithWebpack({
     debug: false,
     file: path.join(__dirname, '..', 'dist', 'dogma-html-parser.min.js'),
+  }),
+
+  // Node build
+  buildWithWebpack({
+    debug: true,
+    file: path.join(__dirname, '..', 'lib', 'index.js'),
+    target: 'node',
   }),
 ])
   .then(() => {
