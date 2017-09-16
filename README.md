@@ -2,7 +2,15 @@
 
 HTML parser and compiler.
 
-## Parser
+## Installation
+
+```bash
+npm install dogma-html-parser
+```
+
+## Usage
+
+### Parser
 
 To parse an HTML string into an AST you can do the following:
 
@@ -46,7 +54,7 @@ You'll end up with:
 <div>Test</div>
 ```
 
-## Compiler
+### Compiler
 
 The compiler simply takes an AST and converts it to an HTML string like so:
 
