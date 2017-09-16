@@ -37,12 +37,15 @@ function buildWithWebpack (options) {
 
   if (!options.debug) {
     plugins.push(
-      new UglifyJSPlugin()
+      new UglifyJSPlugin({
+        sourceMap: true,
+      })
     )
   }
 
   return new Promise((resolve, reject) => {
     const compiler = webpack({
+      devtool: 'source-map',
       entry: path.join(__dirname, '..', 'src', 'index.js'),
       module: {
         rules: [

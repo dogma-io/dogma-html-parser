@@ -22,14 +22,7 @@ import {
 
 const WHITESPACE = /\s/
 
-export function parse (
-  content: string,
-  options?: ParseOptions,
-): ChildrenNode | CommentNode | ElementNode | TextNode | null {
-  return parseNode(content, 0, options).node
-}
-
-export function parseNode (
+function parseNode (
   content: string,
   start: number,
   options?: ParseOptions,
@@ -88,7 +81,7 @@ export function parseNode (
   }
 }
 
-export function parseCommentNode (
+function parseCommentNode (
   content: string,
   start: number,
   options: ParseOptions,
@@ -139,7 +132,7 @@ export function parseCommentNode (
   )
 }
 
-export function parseElementNode (
+function parseElementNode (
   content: string,
   start: number,
   options: ParseOptions,
@@ -266,7 +259,7 @@ export function parseElementNode (
   throw new Error('Unexpected')
 }
 
-export function parseElementNodeAttribute (
+function parseElementNodeAttribute (
   content: string,
   start: number,
   options: ParseOptions,
@@ -351,7 +344,7 @@ export function parseElementNodeAttribute (
   }
 }
 
-export function parseElementOrCommentNode (
+function parseElementOrCommentNode (
   content: string,
   start: number,
   options: ParseOptions,
@@ -367,7 +360,7 @@ export function parseElementOrCommentNode (
   return parseElementNode(content, start, options)
 }
 
-export function parseTextNode (
+function parseTextNode (
   content: string,
   start: number,
   options: ParseOptions,
@@ -413,4 +406,11 @@ export function parseTextNode (
       }
       : null,
   }
+}
+
+export default function (
+  content: string,
+  options?: ParseOptions,
+): ChildrenNode | CommentNode | ElementNode | TextNode | null {
+  return parseNode(content, 0, options).node
 }

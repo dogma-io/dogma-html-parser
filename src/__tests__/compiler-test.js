@@ -1,4 +1,4 @@
-import {compile} from '../compiler'
+import compile from '../compiler'
 
 import {
   CHILDREN_TYPE,

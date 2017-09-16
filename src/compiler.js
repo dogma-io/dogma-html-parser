@@ -18,7 +18,7 @@ const SELF_CLOSING_ELEMENTS = [
   'input',
 ]
 
-export function compile (
+export default function compile (
   node: ChildrenNode | CommentNode | ElementNode | TextNode
 ): string {
   switch (node.type) {
@@ -39,7 +39,7 @@ export function compile (
   }
 }
 
-export function compileElementNode (node: ElementNode): string {
+function compileElementNode (node: ElementNode): string {
   let attrString = ''
   let children = ''
   const name = node.name
