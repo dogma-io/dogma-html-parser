@@ -1,5 +1,12 @@
 import {compile} from '../compiler'
 
+import {
+  CHILDREN_TYPE,
+  COMMENT_TYPE,
+  ELEMENT_TYPE,
+  TEXT_TYPE,
+} from '../types'
+
 describe('compiler', () => {
   describe('compile', () => {
     [
@@ -7,7 +14,7 @@ describe('compiler', () => {
         desc: 'text',
         input: {
           text: 'Foo',
-          type: 'text',
+          type: TEXT_TYPE,
         },
         output: 'Foo',
       },
@@ -15,7 +22,7 @@ describe('compiler', () => {
         desc: 'text with whitespace',
         input: {
           text: 'Foo \t\nbar',
-          type: 'text',
+          type: TEXT_TYPE,
         },
         output: 'Foo \t\nbar',
       },
@@ -23,7 +30,7 @@ describe('compiler', () => {
         desc: 'text with escaped character',
         input: {
           text: 'Foo\\<bar',
-          type: 'text',
+          type: TEXT_TYPE,
         },
         output: 'Foo\\<bar',
       },
@@ -31,7 +38,7 @@ describe('compiler', () => {
         desc: 'comment',
         input: {
           comment: 'Foo',
-          type: 'comment',
+          type: COMMENT_TYPE,
         },
         output: '<!--Foo-->',
       },
@@ -39,7 +46,7 @@ describe('compiler', () => {
         desc: 'comment with whitespace',
         input: {
           comment: ' \t\nFoo \t\nbar \t\n',
-          type: 'comment',
+          type: COMMENT_TYPE,
         },
         output: '<!-- \t\nFoo \t\nbar \t\n-->',
       },
@@ -47,7 +54,7 @@ describe('compiler', () => {
         desc: 'comment with escaped character',
         input: {
           comment: 'Foo\\<bar',
-          type: 'comment',
+          type: COMMENT_TYPE,
         },
         output: '<!--Foo\\<bar-->',
       },
@@ -57,13 +64,14 @@ describe('compiler', () => {
           children: [
             {
               comment: 'foo',
-              type: 'comment',
+              type: COMMENT_TYPE,
             },
             {
               comment: 'bar',
-              type: 'comment',
+              type: COMMENT_TYPE,
             },
           ],
+          type: CHILDREN_TYPE,
         },
         output: '<!--foo--><!--bar-->',
       },
@@ -73,17 +81,18 @@ describe('compiler', () => {
           children: [
             {
               comment: 'foo',
-              type: 'comment',
+              type: COMMENT_TYPE,
             },
             {
               text: '\n',
-              type: 'text',
+              type: TEXT_TYPE,
             },
             {
               comment: 'bar',
-              type: 'comment',
+              type: COMMENT_TYPE,
             },
           ],
+          type: CHILDREN_TYPE,
         },
         output: '<!--foo-->\n<!--bar-->',
       },
@@ -91,7 +100,7 @@ describe('compiler', () => {
         desc: 'div element with not attributes or children',
         input: {
           name: 'div',
-          type: 'element',
+          type: ELEMENT_TYPE,
         },
         output: '<div></div>',
       },
@@ -99,7 +108,7 @@ describe('compiler', () => {
         desc: 'input element with not attributes or children',
         input: {
           name: 'input',
-          type: 'element',
+          type: ELEMENT_TYPE,
         },
         output: '<input/>',
       },
@@ -107,7 +116,7 @@ describe('compiler', () => {
         desc: 'img element with not attributes or children',
         input: {
           name: 'img',
-          type: 'element',
+          type: ELEMENT_TYPE,
         },
         output: '<img/>',
       },
@@ -117,11 +126,11 @@ describe('compiler', () => {
           children: [
             {
               text: 'Foo bar',
-              type: 'text',
+              type: TEXT_TYPE,
             },
           ],
           name: 'div',
-          type: 'element',
+          type: ELEMENT_TYPE,
         },
         output: '<div>Foo bar</div>',
       },
@@ -131,11 +140,11 @@ describe('compiler', () => {
           children: [
             {
               comment: 'Foo bar',
-              type: 'comment',
+              type: COMMENT_TYPE,
             },
           ],
           name: 'div',
-          type: 'element',
+          type: ELEMENT_TYPE,
         },
         output: '<div><!--Foo bar--></div>',
       },

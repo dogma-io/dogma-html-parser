@@ -1,6 +1,12 @@
+/**
+ * @flow
+ */
+
 import {
+  CHILDREN_TYPE,
   type ChildrenNode,
   COMMENT_TYPE,
+  type CommentNode,
   ELEMENT_TYPE,
   type ElementNode,
   type ParseCommentNodeResponse,
@@ -19,7 +25,7 @@ const WHITESPACE = /\s/
 export function parse (
   content: string,
   options?: ParseOptions,
-): ChildrenNode | ElementNode | TextNode {
+): ChildrenNode | CommentNode | ElementNode | TextNode | null {
   return parseNode(content, 0, options).node
 }
 
@@ -28,24 +34,22 @@ export function parseNode (
   start: number,
   options?: ParseOptions,
 ): ParseNodeResponse {
-  const nodes = []
-  let index = start
+  const nodes: Array<CommentNode | ElementNode | TextNode> = []
+  let index: number = start
 
   options = Object.assign({
     preserveWhitespace: false,
   }, options)
 
   while (index < content.length) {
-    let state
+    let state: ParseElementOrCommentNodeResponse | ParseTextNodeResponse
 
     if (content.length && content[index] === '<') {
       let i = index + 1
 
       // While not really valid, allowing whitespace between < and / for
       // closing tag
-      while (WHITESPACE.test(content[i])) {
-        i++
-      }
+      while (WHITESPACE.test(content[i])) i++
 
       if (content[i] === '/') {
         index -= 1
@@ -57,11 +61,10 @@ export function parseNode (
       state = parseTextNode(content, index, options)
     }
 
-    if (state.node !== null) {
-      nodes.push(state.node)
+    if (state) {
+      if (state.node) nodes.push(state.node)
+      index = state.index
     }
-
-    index = state.index
   }
 
   if (nodes.length === 0) {
@@ -79,6 +82,7 @@ export function parseNode (
       index: index + 1,
       node: {
         children: nodes,
+        type: CHILDREN_TYPE,
       },
     }
   }
@@ -140,17 +144,19 @@ export function parseElementNode (
   start: number,
   options: ParseOptions,
 ): ParseElementNodeResponse {
-  const node = {
+  const node: ElementNode = {
     attributes: {},
     children: [],
+    name: '',
     type: ELEMENT_TYPE,
   }
-  const buffer = []
-  let escapeNextChar = false
-  let isSelfClosing = false
 
-  for (let i = start + 1; i < content.length; i++) {
-    const c = content[i]
+  const buffer: Array<string> = []
+  let escapeNextChar: boolean = false
+  let isSelfClosing: boolean = false
+
+  for (let i: number = start + 1; i < content.length; i++) {
+    const c: string = content[i]
 
     if (c === '\\' && !escapeNextChar) {
       escapeNextChar = true
@@ -159,16 +165,16 @@ export function parseElementNode (
     } else if (c === '/') {
       isSelfClosing = true
     } else if (c === '>') {
-      if (!node.name) {
-        node.name = buffer.join('')
-      }
-
-      if (!Object.keys(node.attributes).length) {
+      if (node.name === '') node.name = buffer.join('')
+      if (
+        typeof node.attributes === 'object' &&
+        !Object.keys(node.attributes).length
+      ) {
         delete node.attributes
       }
 
       if (isSelfClosing) {
-        if (!node.children.length) {
+        if (Array.isArray(node.children) && !node.children.length) {
           delete node.children
         }
 
@@ -187,12 +193,14 @@ export function parseElementNode (
 
         const state = parseNode(content, i + 1, childrenOptions)
 
-        if (state.node) {
-          if (state.node.type) {
-            node.children.push(state.node)
+        if (state.node && Array.isArray(node.children)) {
+          const children = node.children
+
+          if (state.node.type !== CHILDREN_TYPE) {
+            children.push(state.node)
           } else {
             state.node.children.forEach((child) => {
-              node.children.push(child)
+              children.push(child)
             })
           }
         }
@@ -201,31 +209,25 @@ export function parseElementNode (
 
         // While not really valid, allowing whitespace between < and / for
         // closing tag
-        while (WHITESPACE.test(content[j])) {
-          j++
-        }
+        while (WHITESPACE.test(content[j])) j++
 
         j += 1 // for /
 
         // While not really valid, allowing whitespace between / and tag name
         // for closing tag
-        while (WHITESPACE.test(content[j])) {
-          j++
-        }
+        while (WHITESPACE.test(content[j])) j++
 
         j += node.name.length
 
         // While not really valid, allowing whitespace between tag name and >
         // for closing tag
-        while (WHITESPACE.test(content[j])) {
-          j++
-        }
+        while (WHITESPACE.test(content[j])) j++
 
         j += 1 // For >
 
         // TODO: verify closing tag is present and throw if not
 
-        if (!node.children.length) {
+        if (Array.isArray(node.children) && !node.children.length) {
           delete node.children
         }
 
@@ -246,10 +248,10 @@ export function parseElementNode (
 
     // Parse potential attribute since we already have name and aren't closing
     // the current tag
-    } else if (node.name) {
+    } else if (node.name !== '') {
       const state = parseElementNodeAttribute(content, i, options)
 
-      if (state.key) {
+      if (state.key && typeof node.attributes === 'object') {
         node.attributes[state.key] = state.value
       }
 
@@ -266,11 +268,10 @@ export function parseElementNodeAttribute (
   content: string,
   start: number,
   options: ParseOptions,
-): ?ParseElementNodeAttributeResponse {
+): ParseElementNodeAttributeResponse {
   const buffer = []
-  const response = {}
   let escapeNextChar = false
-  let quote
+  let key, quote
 
   for (let i = start; i < content.length; i++) {
     const c = content[i]
@@ -283,17 +284,17 @@ export function parseElementNodeAttribute (
     } else if (!quote && ['/', '>'].indexOf(c) !== -1) {
       // Returning boolean attribute (attribute with no value assigned)
       if (buffer.length) {
-        return Object.assign(response, {
+        return {
           index: i,
           key: buffer.join(''),
           value: true,
-        })
+        }
       }
 
       // False alarm, no attribute here
-      return Object.assign(response, {
+      return {
         index: i,
-      })
+      }
     } else if (['"', "'"].indexOf(c) !== -1) {
       // If starting quote
       if (!quote) {
@@ -306,15 +307,16 @@ export function parseElementNodeAttribute (
         }
 
         quote = c
-        response.key = buffer.splice(0, buffer.length - 1).join('')
+        key = buffer.splice(0, buffer.length - 1).join('')
         buffer.pop() // Remove = from buffer
 
       // If ending quote
       } else if (quote === c) {
-        return Object.assign(response, {
+        return {
           index: ++i,
+          key: key || '',
           value: buffer.join(''),
-        })
+        }
 
       // If not a delimeter quote
       } else {
@@ -327,11 +329,11 @@ export function parseElementNodeAttribute (
 
       // Returning boolean attribute (attribute with no value assigned)
       } else if (buffer.length) {
-        return Object.assign(response, {
+        return {
           index: ++i,
           key: buffer.join(''),
           value: true,
-        })
+        }
 
       // Ignore whitespace before key
       } else {
@@ -342,9 +344,9 @@ export function parseElementNodeAttribute (
     }
   }
 
-  response.index = content.length + 1
-
-  return response
+  return {
+    index: content.length + 1,
+  }
 }
 
 export function parseElementOrCommentNode (

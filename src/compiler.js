@@ -1,4 +1,9 @@
+/**
+ * @flow
+ */
+
 import {
+  CHILDREN_TYPE,
   type ChildrenNode,
   COMMENT_TYPE,
   type CommentNode,
@@ -16,33 +21,51 @@ const SELF_CLOSING_ELEMENTS = [
 export function compile (
   node: ChildrenNode | CommentNode | ElementNode | TextNode
 ): string {
-  if (node.type === TEXT_TYPE) {
-    return node.text
-  } else if (node.type === COMMENT_TYPE) {
-    return `<!--${node.comment}-->`
-  } else if (node.type === ELEMENT_TYPE) {
-    return compileElementNode(node)
-  } else {
-    return node.children.map(compile).join('')
+  switch (node.type) {
+    case CHILDREN_TYPE:
+      return node.children.map(compile).join('')
+
+    case COMMENT_TYPE:
+      return `<!--${node.comment}-->`
+
+    case ELEMENT_TYPE:
+      return compileElementNode(node)
+
+    case TEXT_TYPE:
+      return node.text
+
+    default:
+      throw new Error(`Unknown type ${node.type}`)
   }
 }
 
 export function compileElementNode (node: ElementNode): string {
-  let attributes = ''
+  let attrString = ''
   let children = ''
   const name = node.name
+  const attributes = node.attributes || {}
 
-  if (node.attributes) {
-    const keys = Object.keys(node.attributes)
+  const keys = Object.keys(attributes)
 
-    if (keys.length) {
-      attributes = ' ' + keys.map((key) => {
-        const value = node.attributes[key]
-        const quote = '"' // TODO: figure out which quote to use based on value
-        return value === true ? key : `${key}=${quote}${value}${quote}`
-      })
-        .join(' ')
-    }
+  if (keys.length) {
+    attrString = ' ' + keys.map((key: string) => {
+      const value = attributes[key]
+
+      switch (typeof value) {
+        case 'boolean':
+          return key
+
+        case 'string':
+          const quote = '"' // TODO: figure out which quote to use based on value
+          return `${key}=${quote}${value}${quote}`
+
+        default:
+          throw new Error(
+            `Expected value to be a string or boolean but got a ${typeof value}`
+          )
+      }
+    })
+      .join(' ')
   }
 
   if (Array.isArray(node.children) && node.children.length) {
@@ -50,8 +73,8 @@ export function compileElementNode (node: ElementNode): string {
   }
 
   if (!children && SELF_CLOSING_ELEMENTS.indexOf(name) !== -1) {
-    return `<${name}${attributes}/>`
+    return `<${name}${attrString}/>`
   } else {
-    return `<${name}${attributes}>${children}</${name}>`
+    return `<${name}${attrString}>${children}</${name}>`
   }
 }

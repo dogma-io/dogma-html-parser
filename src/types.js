@@ -1,3 +1,8 @@
+/**
+ * @flow
+ */
+
+export const CHILDREN_TYPE = 'children'
 export const COMMENT_TYPE = 'comment'
 export const ELEMENT_TYPE = 'element'
 export const TEXT_TYPE = 'text'
@@ -13,6 +18,7 @@ export type CommentNode = {|
 |}
 
 export type ElementNode = {|
+  attributes?: {[key: string]: string | bool},
   children?: Array<*>,
   name: string,
   type: 'element',
@@ -23,9 +29,9 @@ export type TextNode = {|
   type: 'text',
 |}
 
-export type ParseOptions = {|
+export type ParseOptions = {
   preserveWhitespace?: boolean,
-|}
+}
 
 export type ParseElementNodeAttributeResponse =
   | {|
@@ -49,15 +55,15 @@ export type ParseElementOrCommentNodeResponse = {|
 
 export type ParseElementNodeResponse = {|
   index: number,
-  node: ChildrenNode | ElementNode,
+  node: ElementNode,
 |}
 
 export type ParseNodeResponse = {|
   index: number,
-  node: ?ChildrenNode | ElementNode | TextNode,
+  node: ChildrenNode | CommentNode | ElementNode | TextNode | null,
 |}
 
 export type ParseTextNodeResponse = {|
   index: number,
-  node: ?ChildrenNode | TextNode,
+  node: ChildrenNode | TextNode | null,
 |}

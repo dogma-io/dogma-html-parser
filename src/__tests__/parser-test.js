@@ -1,5 +1,12 @@
 import {parse} from '../parser'
 
+import {
+  CHILDREN_TYPE,
+  COMMENT_TYPE,
+  ELEMENT_TYPE,
+  TEXT_TYPE,
+} from '../types'
+
 function esc (text) {
   return text
     .replace(/\n/g, '\\n')
@@ -16,7 +23,7 @@ describe('parser', () => {
         ],
         tree: {
           text: 'Test',
-          type: 'text',
+          type: TEXT_TYPE,
         },
       },
       {
@@ -25,7 +32,7 @@ describe('parser', () => {
         ],
         tree: {
           text: 'Foo bar',
-          type: 'text',
+          type: TEXT_TYPE,
         },
       },
       {
@@ -34,7 +41,7 @@ describe('parser', () => {
         ],
         tree: {
           text: 'Foo\\< bar',
-          type: 'text',
+          type: TEXT_TYPE,
         },
       },
 
@@ -45,7 +52,7 @@ describe('parser', () => {
         ],
         tree: {
           comment: 'foo bar',
-          type: 'comment',
+          type: COMMENT_TYPE,
         },
       },
       {
@@ -56,13 +63,14 @@ describe('parser', () => {
           children: [
             {
               comment: 'foo bar',
-              type: 'comment',
+              type: COMMENT_TYPE,
             },
             {
               comment: 'baz',
-              type: 'comment',
+              type: COMMENT_TYPE,
             },
           ],
+          type: CHILDREN_TYPE,
         },
       },
       {
@@ -73,11 +81,11 @@ describe('parser', () => {
           children: [
             {
               comment: 'foo bar',
-              type: 'comment',
+              type: COMMENT_TYPE,
             },
           ],
           name: 'div',
-          type: 'element',
+          type: ELEMENT_TYPE,
         },
       },
 
@@ -96,7 +104,7 @@ describe('parser', () => {
         ],
         tree: {
           name: 'input',
-          type: 'element',
+          type: ELEMENT_TYPE,
         },
       },
 
@@ -117,13 +125,14 @@ describe('parser', () => {
           children: [
             {
               text: 'Foo bar',
-              type: 'text',
+              type: TEXT_TYPE,
             },
             {
               name: 'input',
-              type: 'element',
+              type: ELEMENT_TYPE,
             },
           ],
+          type: CHILDREN_TYPE,
         },
       },
 
@@ -144,13 +153,14 @@ describe('parser', () => {
           children: [
             {
               name: 'input',
-              type: 'element',
+              type: ELEMENT_TYPE,
             },
             {
               text: 'Foo bar',
-              type: 'text',
+              type: TEXT_TYPE,
             },
           ],
+          type: CHILDREN_TYPE,
         },
       },
 
@@ -180,7 +190,7 @@ describe('parser', () => {
             autofocus: true,
           },
           name: 'input',
-          type: 'element',
+          type: ELEMENT_TYPE,
         },
       },
 
@@ -194,7 +204,7 @@ describe('parser', () => {
             value: 'test',
           },
           name: 'input',
-          type: 'element',
+          type: ELEMENT_TYPE,
         },
       },
 
@@ -208,7 +218,7 @@ describe('parser', () => {
             value: 'test',
           },
           name: 'input',
-          type: 'element',
+          type: ELEMENT_TYPE,
         },
       },
 
@@ -223,7 +233,7 @@ describe('parser', () => {
             value: "foo\\'bar",
           },
           name: 'input',
-          type: 'element',
+          type: ELEMENT_TYPE,
         },
       },
 
@@ -238,7 +248,7 @@ describe('parser', () => {
             value: 'foo\\"bar',
           },
           name: 'input',
-          type: 'element',
+          type: ELEMENT_TYPE,
         },
       },
 
@@ -270,7 +280,7 @@ describe('parser', () => {
         ],
         tree: {
           name: 'div',
-          type: 'element',
+          type: ELEMENT_TYPE,
         },
       },
 
@@ -292,11 +302,11 @@ describe('parser', () => {
           children: [
             {
               text: 'Foo',
-              type: 'text',
+              type: TEXT_TYPE,
             },
           ],
           name: 'label',
-          type: 'element',
+          type: ELEMENT_TYPE,
         },
       },
 
@@ -309,11 +319,11 @@ describe('parser', () => {
           children: [
             {
               text: '\n\t foo \t\nbar \t\n',
-              type: 'text',
+              type: TEXT_TYPE,
             },
           ],
           name: 'pre',
-          type: 'element',
+          type: ELEMENT_TYPE,
         },
       },
 
@@ -353,11 +363,11 @@ describe('parser', () => {
           children: [
             {
               name: 'input',
-              type: 'element',
+              type: ELEMENT_TYPE,
             },
           ],
           name: 'div',
-          type: 'element',
+          type: ELEMENT_TYPE,
         },
       },
 
@@ -372,19 +382,19 @@ describe('parser', () => {
               children: [
                 {
                   text: 'Foo',
-                  type: 'text',
+                  type: TEXT_TYPE,
                 },
               ],
               name: 'strong',
-              type: 'element',
+              type: ELEMENT_TYPE,
             },
             {
               text: 'bar',
-              type: 'text',
+              type: TEXT_TYPE,
             },
           ],
           name: 'p',
-          type: 'element',
+          type: ELEMENT_TYPE,
         },
       },
       {
@@ -399,31 +409,32 @@ describe('parser', () => {
                   children: [
                     {
                       text: 'Foo',
-                      type: 'text',
+                      type: TEXT_TYPE,
                     },
                   ],
                   name: 'strong',
-                  type: 'element',
+                  type: ELEMENT_TYPE,
                 },
                 {
                   text: 'bar',
-                  type: 'text',
+                  type: TEXT_TYPE,
                 },
               ],
               name: 'p',
-              type: 'element',
+              type: ELEMENT_TYPE,
             },
             {
               children: [
                 {
                   text: 'baz',
-                  type: 'text',
+                  type: TEXT_TYPE,
                 },
               ],
               name: 'p',
-              type: 'element',
+              type: ELEMENT_TYPE,
             },
           ],
+          type: CHILDREN_TYPE,
         },
       },
 
@@ -438,7 +449,7 @@ describe('parser', () => {
             style: 'color:red',
           },
           name: 'div',
-          type: 'element',
+          type: ELEMENT_TYPE,
         },
       },
 
@@ -456,7 +467,7 @@ describe('parser', () => {
             'data-permalink': 'https://caltucky.com/about/hbgrad-32/',
           },
           name: 'img',
-          type: 'element',
+          type: ELEMENT_TYPE,
         },
       },
     ]

@@ -4,6 +4,7 @@
   "description": "HTML parser and compiler",
   "main": "index.js",
   "scripts": {
+    "build": "./scripts/build.js",
     "test": "flow && eslint . && jest"
   },
   "repository": {
@@ -33,6 +34,12 @@
     "eslint-plugin-promise": "3.5.0",
     "eslint-plugin-standard": "3.0.1",
     "flow-bin": "0.54.1",
-    "jest-cli": "21.0.2"
+    "jest-cli": "21.0.2",
+    "rollup": "0.49.3",
+    "rollup-plugin-flow": "1.1.1",
+    "rollup-plugin-uglify": "2.0.1",
+    "uglify-es": "3.1.0",
+    "uglifyjs-webpack-plugin": "0.4.6",
+    "webpack": "3.6.0"
   }
 }
